@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Institutional Process Improvement Tracker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2744;--navy2:#243159;--amber:#d4870f;--amber-lt:#fef3e2;--amber-dk:#7a4c06;
+  --slate:#f4f6fa;--border:rgba(0,0,0,0.1);
+  --green-bg:#eaf3de;--green-tx:#27500a;
+  --blue-bg:#e6f1fb;--blue-tx:#0c447c;
+  --amber-bg:#faeeda;--amber-tx:#633806;
+  --red-bg:#fcebeb;--red-tx:#791f1f;
+  --gray-bg:#f1efe8;--gray-tx:#444441;
+  --purple-bg:#eeedfe;--purple-tx:#3c3489;
+  --bg-primary:#ffffff;--bg-secondary:#f4f6fa;
+  --text-primary:#1a1a1a;--text-secondary:#666;
+  --border-color:rgba(0,0,0,0.1);
+  --r:8px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg-primary:#1e1e1e;--bg-secondary:#2a2a2a;
+  --text-primary:#f0f0f0;--text-secondary:#999;
+  --border-color:rgba(255,255,255,0.1);
+  --green-bg:#1a2e12;--green-tx:#8fcf6a;
+  --blue-bg:#0d1f35;--blue-tx:#7bb8f0;
+  --amber-bg:#2a1f08;--amber-tx:#e8a84a;
+  --red-bg:#2e1010;--red-tx:#f08080;
+  --gray-bg:#252525;--gray-tx:#aaa;
+}}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg-secondary);color:var(--text-primary);font-size:14px;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px}
+.app{display:grid;grid-template-columns:220px 1fr;width:100%;max-width:1100px;min-height:calc(100vh - 48px);border:0.5px solid var(--border-color);border-radius:12px;overflow:hidden;background:var(--bg-primary);box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.sidebar{background:var(--navy);color:#fff;display:flex;flex-direction:column}
+.logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.logo-tag{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:4px}
+.logo-title{font-size:14px;font-weight:500;line-height:1.3;color:#fff}
+.logo-accent{color:var(--amber)}
+.nav{padding:12px 8px;flex:1}
+.nav-section{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:10px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);cursor:pointer;color:rgba(255,255,255,0.7);font-size:13px;transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,0.08);color:#fff}
+.nav-item.active{background:var(--amber);color:#fff;font-weight:500}
+.nav-item i{font-size:16px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:rgba(255,255,255,0.15);border-radius:20px;font-size:10px;padding:1px 7px}
+.nav-item.active .nav-badge{background:rgba(0,0,0,0.2)}
+.sidebar-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(255,255,255,0.35)}
+.main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg-primary)}
+.topbar{padding:14px 20px;border-bottom:0.5px solid var(--border-color);display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:16px;font-weight:500;flex:1;color:var(--text-primary)}
+.topbar-sub{font-size:12px;color:var(--text-secondary);margin-top:1px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);border:0.5px solid var(--border-color);background:transparent;cursor:pointer;font-size:13px;color:var(--text-primary);transition:all 0.15s}
+.btn:hover{background:var(--bg-secondary)}
+.btn-primary{background:var(--amber);border-color:var(--amber);color:#fff}
+.btn-primary:hover{background:var(--amber-dk);border-color:var(--amber-dk)}
+.content{flex:1;overflow-y:auto;padding:20px}
+.panel{display:none}
+.panel.active{display:block}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--bg-secondary);border-radius:var(--r);padding:14px 16px}
+.kpi-label{font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:500;line-height:1;font-family:monospace}
+.kpi-sub{font-size:11px;color:var(--text-secondary);margin-top:4px}
+.kpi.kpi-amber .kpi-value{color:var(--amber)}
+.kpi.kpi-green .kpi-value{color:#27500a}
+.kpi.kpi-blue .kpi-value{color:#0c447c}
+@media(prefers-color-scheme:dark){.kpi.kpi-green .kpi-value{color:#8fcf6a}.kpi.kpi-blue .kpi-value{color:#7bb8f0}}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary)}
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:4px 12px;border-radius:20px;border:0.5px solid var(--border-color);background:transparent;cursor:pointer;font-size:12px;color:var(--text-secondary);transition:all 0.15s}
+.filter-btn:hover{background:var(--bg-secondary)}
+.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.proj-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.proj-table th{text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary);padding:8px 10px;border-bottom:0.5px solid var(--border-color);white-space:nowrap}
+.proj-table td{padding:10px;border-bottom:0.5px solid var(--border-color);vertical-align:top;overflow:hidden;word-break:break-word}
+.proj-table tr:last-child td{border-bottom:none}
+.proj-table tbody tr:hover td{background:var(--bg-secondary)}
+.proj-id{font-family:monospace;font-size:11px;color:var(--text-secondary)}
+.proj-name{font-weight:500;font-size:13px;margin-bottom:2px}
+.proj-owner{font-size:11px;color:var(--text-secondary)}
+.status-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:500;white-space:nowrap}
+.s-completed{background:var(--green-bg);color:var(--green-tx)}
+.s-in-progress{background:var(--blue-bg);color:var(--blue-tx)}
+.s-not-started{background:var(--gray-bg);color:var(--gray-tx)}
+.s-on-hold{background:var(--amber-bg);color:var(--amber-tx)}
+.s-cancelled{background:var(--red-bg);color:var(--red-tx)}
+.p-high{background:var(--red-bg);color:var(--red-tx);display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500}
+.p-medium{background:var(--amber-bg);color:var(--amber-tx);display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500}
+.p-low{background:var(--green-bg);color:var(--green-tx);display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500}
+.prog-wrap{display:flex;align-items:center;gap:8px}
+.prog-bar{flex:1;height:5px;background:var(--bg-secondary);border-radius:2px;overflow:hidden;min-width:40px}
+.prog-fill{height:100%;border-radius:2px;background:var(--navy);transition:width 0.4s}
+.prog-fill.done{background:#3b6d11}
+.prog-fill.overdue{background:#a32d2d}
+.prog-pct{font-family:monospace;font-size:11px;color:var(--text-secondary);white-space:nowrap;min-width:30px}
+.date-cell{font-family:monospace;font-size:11px;white-space:nowrap}
+.overdue-flag{color:#a32d2d;font-size:10px;font-weight:500}
+.detail-panel{background:var(--bg-primary);border:0.5px solid var(--border-color);border-radius:12px;padding:20px;margin-top:16px}
+.detail-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:0.5px solid var(--border-color)}
+.detail-id{font-family:monospace;font-size:12px;color:var(--text-secondary);padding:4px 8px;background:var(--bg-secondary);border-radius:4px}
+.detail-name{font-size:18px;font-weight:500;margin-bottom:6px;color:var(--text-primary)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.detail-field label{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary);display:block;margin-bottom:4px}
+.detail-field p{font-size:13px;color:var(--text-primary)}
+.detail-block{margin-bottom:16px}
+.detail-block h4{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary);margin-bottom:8px}
+.detail-block p{font-size:13px;line-height:1.6;color:var(--text-primary)}
+.milestone-list{list-style:none}
+.milestone-list li{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;border-bottom:0.5px solid var(--border-color);color:var(--text-primary)}
+.milestone-list li:last-child{border-bottom:none}
+.ms-done{color:var(--green-tx)}
+.ms-pending{color:var(--text-secondary)}
+.issue-box{background:var(--red-bg);border:0.5px solid rgba(163,45,45,0.2);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--red-tx)}
+.issue-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.issue-table th{text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary);padding:8px 10px;border-bottom:0.5px solid var(--border-color)}
+.issue-table td{padding:10px;border-bottom:0.5px solid var(--border-color);vertical-align:top;font-size:13px;color:var(--text-primary);overflow:hidden;word-break:break-word}
+.issue-table tr:last-child td{border-bottom:none}
+.issue-table tbody tr:hover td{background:var(--bg-secondary)}
+.add-form{background:var(--bg-secondary);border-radius:12px;padding:20px;margin-bottom:20px;border:0.5px solid var(--border-color)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary);margin-bottom:5px}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:7px 10px;border:0.5px solid var(--border-color);border-radius:var(--r);background:var(--bg-primary);color:var(--text-primary);font-size:13px;font-family:inherit}
+.form-field textarea{resize:vertical;min-height:70px}
+.form-full{grid-column:span 2}
+.form-actions{display:flex;gap:8px;justify-content:flex-end}
+.empty-state{text-align:center;padding:40px;color:var(--text-secondary)}
+.empty-state i{font-size:36px;display:block;margin-bottom:8px;opacity:0.4}
+.search-wrap{position:relative;flex:1;max-width:280px}
+.search-wrap input{width:100%;padding:6px 10px 6px 32px;border:0.5px solid var(--border-color);border-radius:var(--r);background:var(--bg-secondary);color:var(--text-primary);font-size:13px}
+.search-wrap i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--text-secondary);pointer-events:none}
+.mini-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.mini-stat{background:var(--bg-secondary);border-radius:var(--r);padding:12px 14px}
+.mini-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary);margin-bottom:4px}
+.mini-stat-val{font-size:20px;font-weight:500;font-family:monospace;color:var(--text-primary)}
+.stacked-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;margin-bottom:12px}
+.stacked-bar span{border-radius:2px}
+.legend-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary)}
+.legend-dot{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0}
+select{background:var(--bg-primary);color:var(--text-primary)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-tag">Institution</div>
+      <div class="logo-title">Process<br><span class="logo-accent">Improvement</span><br>Tracker</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Workspace</div>
+      <button class="nav-item active" onclick="showPanel('dashboard',this)">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard
+      </button>
+      <button class="nav-item" onclick="showPanel('projects',this)">
+        <i class="ti ti-list-check" aria-hidden="true"></i> Projects
+        <span class="nav-badge" id="proj-count">6</span>
+      </button>
+      <button class="nav-item" onclick="showPanel('issues',this)">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i> Issue Log
+        <span class="nav-badge" id="issue-count">3</span>
+      </button>
+      <button class="nav-item" onclick="showPanel('add',this)">
+        <i class="ti ti-plus" aria-hidden="true"></i> Add Project
+      </button>
+    </nav>
+    <div class="sidebar-footer">FY 2025 · Process Office</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+        <div class="topbar-sub" id="topbar-sub">Overview of all improvement initiatives</div>
+      </div>
+      <div class="search-wrap">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input type="text" placeholder="Search projects…" id="search-input" oninput="filterProjects()">
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <div style="background:var(--bg-secondary);border-radius:var(--r);padding:14px 16px;margin-bottom:20px">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-secondary);margin-bottom:8px">Progress by status</div>
+          <div class="stacked-bar" id="stacked-bar"></div>
+          <div class="legend-row" id="legend"></div>
+        </div>
+        <div class="section-head"><span class="section-title">All projects</span></div>
+        <div id="dashboard-table"></div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="panel" id="panel-projects">
+        <div class="filter-row" id="filter-row">
+          <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+          <button class="filter-btn" onclick="setFilter('In Progress',this)">In progress</button>
+          <button class="filter-btn" onclick="setFilter('Not Started',this)">Not started</button>
+          <button class="filter-btn" onclick="setFilter('Completed',this)">Completed</button>
+          <button class="filter-btn" onclick="setFilter('On Hold',this)">On hold</button>
+        </div>
+        <div id="projects-table"></div>
+        <div id="project-detail"></div>
+      </div>
+
+      <!-- ISSUES -->
+      <div class="panel" id="panel-issues">
+        <div class="mini-stat-row" id="issue-stats"></div>
+        <div id="issues-table"></div>
+      </div>
+
+      <!-- ADD PROJECT -->
+      <div class="panel" id="panel-add">
+        <div class="add-form">
+          <div style="font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text-primary)">New project</div>
+          <div class="form-grid">
+            <div class="form-field"><label>Project name</label><input type="text" id="f-name" placeholder="e.g. Enrollment Workflow Redesign"></div>
+            <div class="form-field"><label>Department / Owner</label><input type="text" id="f-owner" placeholder="e.g. Registrar / J. Smith"></div>
+            <div class="form-field"><label>Category</label>
+              <select id="f-cat"><option>Process Redesign</option><option>Compliance</option><option>Technology</option><option>Training</option><option>Policy</option><option>Other</option></select>
+            </div>
+            <div class="form-field"><label>Priority</label>
+              <select id="f-pri"><option>High</option><option>Medium</option><option>Low</option></select>
+            </div>
+            <div class="form-field"><label>Start date</label><input type="date" id="f-start"></div>
+            <div class="form-field"><label>Target date</label><input type="date" id="f-target"></div>
+            <div class="form-field form-full"><label>Requirements</label><textarea id="f-req" placeholder="Key requirements and stakeholder sign-offs needed…"></textarea></div>
+            <div class="form-field form-full"><label>Key deliverables</label><textarea id="f-del" placeholder="List major deliverables…"></textarea></div>
+            <div class="form-field form-full"><label>Milestones</label><textarea id="f-mil" placeholder="e.g. Kickoff | Discovery | Draft | Review | Launch"></textarea></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" onclick="cancelAdd()">Cancel</button>
+            <button class="btn btn-primary" onclick="addProject()"><i class="ti ti-plus" aria-hidden="true"></i> Add project</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const today=new Date();today.setHours(0,0,0,0);
+let projects=[
+  {id:'PI-001',name:'Student Enrollment Workflow',owner:'Registrar / J. Smith',category:'Process Redesign',priority:'High',start:'2025-01-15',target:'2025-06-30',end:null,status:'In Progress',pct:65,requirements:'Map current enrollment steps; identify bottlenecks; obtain stakeholder sign-off',deliverables:'As-is process map; To-be process map; SOP document; Training guide',milestones:'Kickoff (Jan 15)✓|Discovery (Feb 28)✓|Draft SOP (Apr 30)✓|UAT (Jun 15)|Go-Live (Jun 30)',issues:'Delay in IT sign-off for portal integration; escalated to CIO on May 3'},
+  {id:'PI-002',name:'Faculty Onboarding Standardization',owner:'HR / M. Patel',category:'Policy',priority:'High',start:'2025-02-01',target:'2025-07-31',end:null,status:'In Progress',pct:40,requirements:'Review existing onboarding docs; benchmark peer institutions; draft unified policy',deliverables:'Benchmark report; Policy draft; Checklist toolkit; Manager guide',milestones:'Kickoff (Feb 1)✓|Benchmarking (Mar 31)✓|Draft Policy (May 31)|Approval (Jul 15)|Launch (Jul 31)',issues:''},
+  {id:'PI-003',name:'Budget Reporting Automation',owner:'Finance / R. Chen',category:'Technology',priority:'Medium',start:'2025-03-01',target:'2025-09-30',end:null,status:'In Progress',pct:20,requirements:'Define reporting requirements; select BI tool; configure dashboards; train users',deliverables:'Requirements doc; Vendor selection memo; Power BI dashboards; Training materials',milestones:'Kickoff (Mar 1)✓|Requirements (Apr 15)✓|Tool Selection (May 31)|Build (Aug 31)|Go-Live (Sep 30)',issues:'Awaiting Procurement approval for Power BI license'},
+  {id:'PI-004',name:'FERPA Compliance Audit',owner:'Compliance / T. Davis',category:'Compliance',priority:'High',start:'2024-11-01',target:'2025-03-31',end:'2025-03-28',status:'Completed',pct:100,requirements:'Conduct data access audit; review disclosure logs; remediate gaps; document findings',deliverables:'Audit report; Gap analysis; Remediation plan; Updated disclosure forms',milestones:'Kickoff (Nov 1)✓|Audit (Dec 31)✓|Gap Analysis (Jan 31)✓|Remediation (Mar 15)✓|Report (Mar 28)✓',issues:''},
+  {id:'PI-005',name:'IT Help Desk SLA Review',owner:'IT / K. Nguyen',category:'Process Redesign',priority:'Medium',start:'2025-04-01',target:'2025-08-31',end:null,status:'Not Started',pct:0,requirements:'Analyze historical ticket data; define SLA tiers; update escalation policy',deliverables:'Data analysis report; Revised SLA policy; Escalation matrix; Staff training deck',milestones:'Kickoff (Apr 1)|Data Analysis (May 31)|Policy Draft (Jun 30)|Training (Aug 15)|Launch (Aug 31)',issues:'Pending resource allocation from IT Director'},
+  {id:'PI-006',name:'Research Grant Submission Process',owner:'Research Office / A. Lopez',category:'Process Redesign',priority:'Low',start:'2025-05-15',target:'2025-11-30',end:null,status:'Not Started',pct:0,requirements:'Interview PIs and grants staff; document pain points; propose streamlined workflow',deliverables:'Interview findings; Future-state workflow; Revised submission checklist',milestones:'Kickoff (May 15)|Interviews (Jun 30)|Analysis (Aug 31)|Draft (Oct 31)|Pilot (Nov 30)',issues:''},
+];
+let issueLog=[
+  {id:'ISS-001',projId:'PI-001',date:'2025-05-03',desc:'IT sign-off delayed for portal integration',impact:'High',prob:'Medium',owner:'J. Smith (PM)',status:'Open',notes:'Escalated to CIO on May 3. Follow-up meeting May 17.'},
+  {id:'ISS-002',projId:'PI-003',date:'2025-04-20',desc:'Procurement approval pending for Power BI license',impact:'Medium',prob:'Low',owner:'R. Chen (Finance)',status:'Open',notes:'Purchase request #4421 submitted. Est. approval May 31.'},
+  {id:'ISS-003',projId:'PI-005',date:'2025-04-01',desc:'Resource not yet allocated by IT Director',impact:'High',prob:'High',owner:'K. Nguyen (IT)',status:'Open',notes:'Discussed Apr 15 steering meeting. Decision expected May 15.'},
+];
+let filterStatus='All';
+let openDetailId=null;
+function statusClass(s){return({'Completed':'s-completed','In Progress':'s-in-progress','Not Started':'s-not-started','On Hold':'s-on-hold','Cancelled':'s-cancelled'})[s]||'s-not-started';}
+function priorityTag(p){const cl=({'High':'p-high','Medium':'p-medium','Low':'p-low'})[p]||'p-low';return`<span class="${cl}">${p}</span>`;}
+function isOverdue(p){if(p.status==='Completed'||p.status==='Cancelled')return false;return p.target&&new Date(p.target)<today;}
+function progColor(p){if(p.status==='Completed')return 'done';if(isOverdue(p))return 'overdue';return '';}
+function fmtDate(d){if(!d)return'—';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function renderKPIs(){
+  const total=projects.length,done=projects.filter(p=>p.status==='Completed').length,ip=projects.filter(p=>p.status==='In Progress').length,avg=total?Math.round(projects.reduce((s,p)=>s+p.pct,0)/total):0,overdue=projects.filter(p=>isOverdue(p)).length;
+  document.getElementById('kpi-grid').innerHTML=`<div class="kpi"><div class="kpi-label">Total projects</div><div class="kpi-value">${total}</div></div><div class="kpi kpi-amber"><div class="kpi-label">In progress</div><div class="kpi-value">${ip}</div></div><div class="kpi kpi-green"><div class="kpi-label">Completed</div><div class="kpi-value">${done}</div></div><div class="kpi kpi-blue"><div class="kpi-label">Avg complete</div><div class="kpi-value">${avg}%</div>${overdue>0?`<div class="kpi-sub overdue-flag">⚠ ${overdue} overdue</div>`:''}</div>`;
+}
+function renderStackedBar(){
+  const total=projects.length||1;
+  const statuses=[{s:'Completed',color:'#3b6d11'},{s:'In Progress',color:'#1a2744'},{s:'Not Started',color:'#b4b2a9'},{s:'On Hold',color:'#d4870f'},{s:'Cancelled',color:'#a32d2d'}];
+  const bar=document.getElementById('stacked-bar'),leg=document.getElementById('legend');
+  bar.innerHTML='';leg.innerHTML='';
+  statuses.forEach(({s,color})=>{const cnt=projects.filter(p=>p.status===s).length;if(!cnt)return;bar.innerHTML+=`<span style="flex:${cnt};background:${color}" title="${s}: ${cnt}"></span>`;leg.innerHTML+=`<span class="legend-item"><span class="legend-dot" style="background:${color}"></span>${s} (${cnt})</span>`;});
+}
+function buildProjectTable(list,clickable=true){
+  if(!list.length)return`<div class="empty-state"><i class="ti ti-clipboard-off" aria-hidden="true"></i>No projects match this filter.</div>`;
+  return`<table class="proj-table"><thead><tr><th style="width:70px">ID</th><th style="width:22%">Project</th><th style="width:14%">Category</th><th style="width:70px">Priority</th><th style="width:110px">Target date</th><th style="width:110px">Status</th><th>Progress</th></tr></thead><tbody>${list.map(p=>`<tr style="cursor:${clickable?'pointer':'default'}" onclick="${clickable?`openDetail('${p.id}')`:''}" title="${clickable?'Click to view details':''}"><td class="proj-id">${p.id}</td><td><div class="proj-name">${p.name}</div><div class="proj-owner">${p.owner}</div></td><td style="font-size:12px;color:var(--text-secondary)">${p.category}</td><td>${priorityTag(p.priority)}</td><td class="date-cell">${fmtDate(p.target)}${isOverdue(p)?'<div class="overdue-flag">overdue</div>':''}</td><td><span class="status-tag ${statusClass(p.status)}">${p.status}</span></td><td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill ${progColor(p)}" style="width:${p.pct}%"></div></div><span class="prog-pct">${p.pct}%</span></div></td></tr>`).join('')}</tbody></table>`;
+}
+function renderDashboard(){renderKPIs();renderStackedBar();document.getElementById('dashboard-table').innerHTML=buildProjectTable(projects,true);}
+function setFilter(s,el){filterStatus=s;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderProjectsList();}
+function filterProjects(){renderProjectsList();renderDashboard();}
+function getSearched(){const q=document.getElementById('search-input').value.toLowerCase();return projects.filter(p=>(!q||p.name.toLowerCase().includes(q)||p.owner.toLowerCase().includes(q)||p.id.toLowerCase().includes(q))&&(filterStatus==='All'||p.status===filterStatus));}
+function renderProjectsList(){document.getElementById('projects-table').innerHTML=buildProjectTable(getSearched(),true);if(openDetailId)openDetail(openDetailId);}
+function openDetail(id){
+  openDetailId=id;const p=projects.find(x=>x.id===id);if(!p){document.getElementById('project-detail').innerHTML='';return;}
+  const milestones=p.milestones?p.milestones.split('|').map(m=>{const done=m.includes('✓');const txt=m.replace('✓','').trim();return`<li><i class="ti ${done?'ti-circle-check ms-done':'ti-circle ms-pending'}" aria-hidden="true"></i> ${txt}</li>`;}).join(''):'<li style="color:var(--text-secondary);font-size:13px">No milestones entered</li>';
+  document.getElementById('project-detail').innerHTML=`<div class="detail-panel"><div class="detail-header"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="detail-id">${p.id}</span><span class="status-tag ${statusClass(p.status)}">${p.status}</span>${priorityTag(p.priority)}</div><div class="detail-name">${p.name}</div><div style="font-size:12px;color:var(--text-secondary)">${p.owner} · ${p.category}</div></div><div style="text-align:right;flex-shrink:0"><select style="padding:6px 10px;border:0.5px solid var(--border-color);border-radius:var(--r);background:var(--bg-primary);color:var(--text-primary);font-size:13px;cursor:pointer" onchange="updateStatus('${p.id}',this.value)">${['Not Started','In Progress','On Hold','Completed','Cancelled'].map(s=>`<option ${s===p.status?'selected':''}>${s}</option>`).join('')}</select><div style="margin-top:6px"><input type="range" min="0" max="100" value="${p.pct}" style="width:140px" oninput="updatePct('${p.id}',this.value)" title="Adjust % complete"><span id="pct-label-${p.id}" style="font-family:monospace;font-size:12px;margin-left:4px">${p.pct}%</span></div></div></div><div class="detail-grid"><div class="detail-field"><label>Start date</label><p class="date-cell">${fmtDate(p.start)}</p></div><div class="detail-field"><label>Target date</label><p class="date-cell">${fmtDate(p.target)}${isOverdue(p)?'<br><span class="overdue-flag">⚠ Past target</span>':''}</p></div>${p.end?`<div class="detail-field"><label>Completed</label><p class="date-cell">${fmtDate(p.end)}</p></div>`:''}</div><div class="detail-block"><h4>Requirements</h4><p>${p.requirements||'—'}</p></div><div class="detail-block"><h4>Key deliverables</h4><p>${p.deliverables||'—'}</p></div><div class="detail-block"><h4>Milestones</h4><ul class="milestone-list">${milestones}</ul></div>${p.issues?`<div class="detail-block"><h4>Issues / notes</h4><div class="issue-box"><i class="ti ti-alert-circle" aria-hidden="true"></i> ${p.issues}</div></div>`:''}<div style="text-align:right;margin-top:12px"><button class="btn" style="color:var(--red-tx);border-color:rgba(163,45,45,0.3)" onclick="deleteProject('${p.id}')"><i class="ti ti-trash" aria-hidden="true"></i> Remove project</button></div></div>`;
+  showPanel('projects',document.querySelectorAll('.nav-item')[1]);
+  setTimeout(()=>document.getElementById('project-detail').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function updateStatus(id,val){const p=projects.find(x=>x.id===id);if(!p)return;p.status=val;if(val==='Completed'&&p.pct<100)p.pct=100;if(val==='Not Started')p.pct=0;renderDashboard();renderProjectsList();openDetail(id);updateCounts();}
+function updatePct(id,val){const p=projects.find(x=>x.id===id);if(!p)return;p.pct=parseInt(val);const lbl=document.getElementById('pct-label-'+id);if(lbl)lbl.textContent=val+'%';renderDashboard();}
+function deleteProject(id){if(!confirm('Remove this project from the tracker?'))return;projects=projects.filter(p=>p.id!==id);openDetailId=null;document.getElementById('project-detail').innerHTML='';renderDashboard();renderProjectsList();updateCounts();}
+function renderIssues(){
+  const open=issueLog.filter(i=>i.status==='Open').length,resolved=issueLog.filter(i=>i.status==='Resolved'||i.status==='Closed').length;
+  document.getElementById('issue-stats').innerHTML=`<div class="mini-stat"><div class="mini-stat-label">Total issues</div><div class="mini-stat-val">${issueLog.length}</div></div><div class="mini-stat"><div class="mini-stat-label">Open</div><div class="mini-stat-val" style="color:#a32d2d">${open}</div></div><div class="mini-stat"><div class="mini-stat-label">Resolved</div><div class="mini-stat-val" style="color:#27500a">${resolved}</div></div>`;
+  document.getElementById('issues-table').innerHTML=`<table class="issue-table"><thead><tr><th style="width:70px">ID</th><th style="width:70px">Project</th><th style="width:110px">Date raised</th><th>Description</th><th style="width:70px">Impact</th><th style="width:130px">Owner</th><th style="width:80px">Status</th></tr></thead><tbody>${issueLog.map(i=>`<tr><td style="font-family:monospace;font-size:11px">${i.id}</td><td><span style="font-family:monospace;font-size:11px;color:var(--text-secondary)">${i.projId}</span></td><td style="font-family:monospace;font-size:11px;white-space:nowrap">${fmtDate(i.date)}</td><td><div style="margin-bottom:4px">${i.desc}</div><div style="font-size:11px;color:var(--text-secondary)">${i.notes}</div></td><td><span class="status-tag ${i.impact==='High'?'s-cancelled':i.impact==='Medium'?'s-on-hold':'s-completed'}">${i.impact}</span></td><td style="font-size:12px">${i.owner}</td><td><span class="status-tag ${i.status==='Open'?'s-in-progress':i.status==='Resolved'?'s-completed':'s-not-started'}">${i.status}</span></td></tr>`).join('')}</tbody></table>`;
+}
+function addProject(){
+  const name=document.getElementById('f-name').value.trim();if(!name){alert('Please enter a project name.');return;}
+  const num=projects.length+1,id='PI-'+String(num).padStart(3,'0');
+  projects.push({id,name,owner:document.getElementById('f-owner').value.trim()||'—',category:document.getElementById('f-cat').value,priority:document.getElementById('f-pri').value,start:document.getElementById('f-start').value||null,target:document.getElementById('f-target').value||null,end:null,status:'Not Started',pct:0,requirements:document.getElementById('f-req').value.trim(),deliverables:document.getElementById('f-del').value.trim(),milestones:document.getElementById('f-mil').value.trim(),issues:''});
+  ['f-name','f-owner','f-req','f-del','f-mil'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('f-start').value='';document.getElementById('f-target').value='';
+  updateCounts();renderDashboard();showPanel('projects',document.querySelectorAll('.nav-item')[1]);setTimeout(()=>openDetail(id),50);
+}
+function cancelAdd(){showPanel('dashboard',document.querySelectorAll('.nav-item')[0]);}
+function updateCounts(){document.getElementById('proj-count').textContent=projects.length;document.getElementById('issue-count').textContent=issueLog.filter(i=>i.status==='Open').length;}
+const panelMap={dashboard:'Dashboard',projects:'Projects',issues:'Issue Log',add:'Add Project'};
+const subMap={dashboard:'Overview of all improvement initiatives',projects:'Click a row to view full details',issues:'Track and resolve project issues',add:'Enter details for a new initiative'};
+function showPanel(name,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('topbar-title').textContent=panelMap[name]||name;
+  document.getElementById('topbar-sub').textContent=subMap[name]||'';
+  if(name==='dashboard')renderDashboard();
+  if(name==='projects')renderProjectsList();
+  if(name==='issues')renderIssues();
+  if(name!=='projects'){openDetailId=null;const d=document.getElementById('project-detail');if(d)d.innerHTML='';}
+}
+renderDashboard();updateCounts();
+</script>
+</body>
+</html>
